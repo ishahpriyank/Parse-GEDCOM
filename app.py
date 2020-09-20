@@ -8,6 +8,7 @@ import re
 import operator
 from typing import List, Optional
 
+from prettytable import PrettyTable
 
 TAGS: List[str] = ['INDI', 'NAME', 'SEX', 'BIRT', 'DEAT', 'FAMC', 'FAMS', 'FAM',
                    'MARR', 'HUSB', 'WIFE', 'CHIL', 'DIV', 'DATE', 'HEAD', 'TRLR', 'NOTE']
@@ -31,6 +32,26 @@ def get_lines(path) -> List[str]:
     """ get lines read from a .ged file """
     with (file := open(path, "r")):  # close file after opening
         return [line for line in file]
+
+
+def pretty_print(individuals: List[Individual], families: List[Family]) -> None:
+    """ prettify the data """
+
+    individual_table: PrettyTable = PrettyTable()
+    family_table: PrettyTable = PrettyTable()
+    individual_table.field_names = ["ID", "Name", "Gender", "Birthday", "Age",
+                                    "Alive", "Death", "Child", "Spouse"]
+    family_table.field_names = ["ID", "Married", "Divorced", "Husband ID", "Husband Name",
+                                "Wife ID", "Wife Name", "Child"]
+
+    for individual in individuals:  # add individual info to the table
+        individual_table.add_row(individual.info())
+
+    for family in families:  # add individual info to the table
+        family_table.add_row(family.info(individuals))
+
+    print("Individuals\n", individual_table, sep="")
+    print("Families\n", family_table, sep="")
 
 
 def main():
